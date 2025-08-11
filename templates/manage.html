@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<h2>📂 小说管理</h2>
+
+<!-- 上传小说 -->
+<form action="{{ url_for('upload') }}" method="post" enctype="multipart/form-data" class="mb-3">
+    <div class="input-group">
+        <input type="file" name="novel" accept=".txt" class="form-control" required>
+        <button type="submit" class="btn btn-primary">上传</button>
+    </div>
+</form>
+
+<!-- 提示信息 -->
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <div class="alert alert-info">
+      {% for message in messages %}
+        <div>{{ message }}</div>
+      {% endfor %}
+    </div>
+  {% endif %}
+{% endwith %}
+
+<!-- 小说列表 -->
+<ul class="list-group">
+{% for novel in novels %}
+<li class="list-group-item d-flex justify-content-between align-items-center">
+    <span>{{ novel.title }}</span>
+    <div>
+        <button class="btn btn-sm btn-warning me-2" 
+                data-bs-toggle="modal" 
+                data-bs-target="#renameModal"
+                data-old="{{ novel.filename }}"
+                data-title="{{ novel.title }}">
+            重命名
+        </button>
+        <form action="{{ url_for('delete', novel_name=novel.filename) }}" method="post" class="d-inline"
+              onsubmit="return confirm('确定删除《{{ novel.title }}》吗？');">
+            <button type="submit" class="btn btn-sm btn-danger">删除</button>
+        </form>
+    </div>
+</li>
+{% endfor %}
+</ul>
+
+<!-- 通用重命名 Modal -->
+<div class="modal fade" id="renameModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <form method="post" action="{{ url_for('rename') }}">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">重命名小说</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+            <input type="hidden" name="old_filename" id="oldFilename">
+            <div class="mb-3">
+              <label for="newName" class="form-label">新小说名</label>
+              <input type="text" name="new_name" id="newName" class="form-control" required>
+            </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+          <button type="submit" class="btn btn-primary">提交</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- JS 填充 Modal 数据 -->
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    var renameModal = document.getElementById('renameModal');
+    renameModal.addEventListener('show.bs.modal', function (event) {
+        var button = event.relatedTarget;
+        var oldFilename = button.getAttribute('data-old');
+        var title = button.getAttribute('data-title');
+        renameModal.querySelector('#oldFilename').value = oldFilename;
+        renameModal.querySelector('#newName').value = title;
+    });
+});
+</script>
+
+{% endblock %}

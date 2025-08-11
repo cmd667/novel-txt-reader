@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<!-- 目录按钮 -->
+<button class="btn btn-info mb-3" id="toc-toggle" style="position: fixed; top: 24px; right: 20px; z-index: 1050;">目录</button>
+
+<!-- 目录侧边栏 -->
+<div id="toc-sidebar" class="toc-sidebar">
+    <div class="toc-header">
+        <h5>章节目录</h5>
+    </div>
+    <div class="toc-body">
+        <ul class="list-group list-group-flush">
+            {% for title in chapter_titles %}
+                <li class="list-group-item {% if loop.index0 == chapter_index %}active{% endif %}">
+                <a href="{{ url_for('view_chapter', novel_name=filename, chapter_index=loop.index0) }}" class="text-decoration-none">
+                {{ title }}
+                </a>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+
+<!-- 遮罩层（必须加） -->
+<div id="toc-overlay" class="toc-overlay"></div>
+
+<!-- 正文标题和内容 -->
+<h3>{{ title }} - {{ chapter_title }}</h3>
+<div class="novel-content">
+    {% for para in page_paragraphs %}
+        <p>{{ para }}</p>
+    {% endfor %}
+</div>
+
+<nav aria-label="章节分页">
+    <ul class="pagination justify-content-center">
+      <!-- 上一页 -->
+      <li class="page-item {% if current_page == 1 %}disabled{% endif %}">
+        <a class="page-link" href="{{ url_for('view_chapter', novel_name=filename, chapter_index=chapter_index) }}?page={{ current_page - 1 }}">上一页</a>
+      </li>
+  
+      <!-- 首页 -->
+      <li class="page-item {% if current_page == 1 %}active{% endif %}">
+        <a class="page-link" href="{{ url_for('view_chapter', novel_name=filename, chapter_index=chapter_index) }}?page=1">1</a>
+      </li>
+  
+      {% if current_page - 3 > 1 %}
+        <li class="page-item disabled"><span class="page-link">…</span></li>
+      {% endif %}
+  
+      {% for p in range(current_page - 2, current_page + 3) %}
+        {% if p > 1 and p < total_pages %}
+          <li class="page-item {% if p == current_page %}active{% endif %}">
+            <a class="page-link" href="{{ url_for('view_chapter', novel_name=filename, chapter_index=chapter_index) }}?page={{ p }}">{{ p }}</a>
+          </li>
+        {% endif %}
+      {% endfor %}
+  
+      {% if current_page + 2 < total_pages - 1 %}
+        <li class="page-item disabled"><span class="page-link">…</span></li>
+      {% endif %}
+  
+      <!-- 末页 -->
+      {% if total_pages > 1 %}
+      <li class="page-item {% if current_page == total_pages %}active{% endif %}">
+        <a class="page-link" href="{{ url_for('view_chapter', novel_name=filename, chapter_index=chapter_index) }}?page={{ total_pages }}">{{ total_pages }}</a>
+      </li>
+      {% endif %}
+  
+      <!-- 下一页 -->
+      <li class="page-item {% if current_page == total_pages %}disabled{% endif %}">
+        <a class="page-link" href="{{ url_for('view_chapter', novel_name=filename, chapter_index=chapter_index) }}?page={{ current_page + 1 }}">下一页</a>
+      </li>
+    </ul>
+  </nav>
+
+<!-- 上一章 / 下一章 -->
+<div class="d-flex justify-content-between mt-4">
+    {% if chapter_index > 0 %}
+        <a class="btn btn-outline-primary" href="{{ url_for('view_chapter', novel_name=filename, chapter_index=chapter_index - 1) }}">← 上一章</a>
+    {% endif %}
+
+    {% if chapter_index + 1 < chapter_count %}
+        <a class="btn btn-outline-primary" href="{{ url_for('view_chapter', novel_name=filename, chapter_index=chapter_index + 1) }}">下一章 →</a>
+    {% endif %}
+</div>
+
+<a href="/" class="btn btn-secondary mt-4">返回书架</a>
+
+{% endblock %}

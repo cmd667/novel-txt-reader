@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>       
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=0.7"> <!-- 手机适配 -->
+
+    <title>{{ title or "小说阅读器" }}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        /* 小说正文样式 */
+        .novel-content {
+            width: 100%;
+            max-width: 100%;
+            padding-left: 0.1rem;
+            padding-right: 0.1rem;
+            box-sizing: border-box;
+        }
+        .novel-content p {
+            line-height: 1.7;
+            margin: 0 0 1em;
+            font-size: 20px;
+        }
+
+        /* 目录侧边栏 */
+        .toc-sidebar {
+            position: fixed;
+            top: 0;
+            right: -300px; /* 默认隐藏 */
+            width: 280px;
+            height: 100%;
+            background-color: white;
+            box-shadow: -2px 0 5px rgba(0,0,0,0.1);
+            overflow-y: auto;
+            transition: right 0.3s ease;
+            z-index: 1041;
+            padding: 15px;
+        }
+        .toc-sidebar.open {
+            right: 0;
+        }
+        .toc-sidebar a {
+            color: black;
+            text-decoration: none;
+        }
+        .toc-sidebar a:hover {
+            color: #555;
+        }    
+        .toc-sidebar .list-group-item.active a {
+            color: white;
+        }
+
+        /* 遮罩层（目录打开时覆盖正文） */
+        .toc-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.4);
+            z-index: 1040;
+            display: none;
+        }
+        .toc-overlay.open {
+            display: block;
+        }
+
+        /* 响应式优化 */
+        @media (max-width: 768px) {
+            .novel-content p {
+                font-size: 20px; /* 手机上缩小字体 */
+            }
+            .container-fluid {
+                padding-left: 0.1rem;
+                padding-right: 0.1rem;
+            }
+            .toc-sidebar {
+                width: 80%; /* 手机上侧边栏宽度占屏幕大部分 */
+                right: -80%; /* 默认隐藏在屏幕右侧外 */
+            }
+            .toc-sidebar.open {
+                right: 0; /* 滑入屏幕 */
+            }
+        }
+    </style>
+</head>
+<body class="p-4">
+<div class="container-fluid px-0">
+    <div class="d-flex justify-content-between align-items-center">
+        <h1 class="mb-0"><a href="/" class="text-decoration-none">📚 我的小说书架</a></h1>
+        <a href="{{ url_for('manage') }}" class="btn btn-outline-secondary" style="margin-right: 60px;">管理小说</a>
+    </div>    
+    <hr>
+    {% block content %}{% endblock %}
+</div>
+
+<!-- 目录遮罩层 -->
+<div id="toc-overlay" class="toc-overlay"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const sidebar = document.getElementById('toc-sidebar');
+        const toggleBtn = document.getElementById('toc-toggle');
+        const overlay = document.getElementById('toc-overlay');
+
+        if (sidebar && toggleBtn && overlay) {
+            toggleBtn.addEventListener('click', () => {
+                sidebar.classList.toggle('open');
+                overlay.classList.toggle('open');
+            });
+
+            overlay.addEventListener('click', () => {
+                sidebar.classList.remove('open');
+                overlay.classList.remove('open');
+            });
+        }
+    });
+</script>    
+</body>
+</html>

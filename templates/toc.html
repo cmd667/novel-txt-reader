@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<h2>{{ title }} - 章节目录</h2>
+
+<ul class="list-group mt-3">
+    {% for title in chapter_titles %}
+    <li class="list-group-item">
+        <a href="{{ url_for('view_chapter', novel_name=filename, chapter_index=loop.index0) }}">
+            {{ title }}
+        </a>
+    </li>
+    {% endfor %}
+</ul>
+
+<a href="/" class="btn btn-secondary mt-4">返回书架</a>
+
+{% endblock %}
