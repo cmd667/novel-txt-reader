@@ -30,4 +30,3 @@
 
 ## 技术栈
 - flask、python、html
-git remote add origin git@github.com:your-username/your-repository.git
