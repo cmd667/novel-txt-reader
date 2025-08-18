@@ -4,6 +4,8 @@ from markupsafe import Markup
 from function import split_chapters, read_file_auto, split_novel_by_chapter
 import shutil
 
+# nohup python app.py > app.log 2>&1 &
+
 app = Flask(__name__)
 NOVEL_FOLDER = 'novels'  # 定义小说文件存储的文件夹路径
 app.secret_key = os.urandom(24)  # 设置Flask应用的密钥用于session加密
